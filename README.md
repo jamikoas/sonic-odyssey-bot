@@ -1,6 +1,18 @@
 # sonic-odyssey-bot
 sonic odyssey bot tx daily Generate 130 New Address dan Send Token to Address
 
+## Register Account
+
+Sonic Odyssey Testnet (Solana L2 EVM)
+
+➖ Download Backpack Wallet : Wallet (https://chromewebstore.google.com/detail/backpack/aflkmfhebedbjioipglgcbcmnbpgliof
+
+➖ Import your Pk Solana Wallet
+
+➖ Open Link :  https://odyssey.sonic.game/?join=dZyOSB
+
+➖ Connect Wallet and Complete Task
+
 ## Install Node Js (Jika Belon)
 
 ```
