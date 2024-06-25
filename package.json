@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Script untuk mengirimkan SOL dan menghasilkan alamat acak menggunakan Solana Web3.js",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "start": "node index.js"
   },
@@ -14,6 +13,7 @@
     "ed25519-hd-key": "^1.1.0",
     "bs58": "^4.0.1"
   },
-  "author": "Winsnip",
+  "author": "winsnip",
   "license": "MIT"
 }
+
