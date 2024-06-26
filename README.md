@@ -1,5 +1,6 @@
-# sonic-odyssey-bot
-sonic odyssey bot tx daily Generate 130 New Address dan Send Token to Address
+# sonic odyssey bot tx daily Generate 130 New Address dan Send Token to Address
+
+Donate and Support : 0xde260429ef7680c7a43e855b5fcf619948f34e2a
 
 ## Register Account
 
